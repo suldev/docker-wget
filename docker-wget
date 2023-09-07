@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# build the docker image
+docker build . -t docker-wget
+
+# iterator
+num="0"
+# attempt runner #0
+docker run -d --rm --name wget-runner-$num -v $PWD:/data docker-wget /bin/bash -c "wget '$@'"
+
+# attempt subsequent runners if previous num runner already exists
+while [ $? -gt 0 ]; do
+    num=$[$num+1]
+    docker run -d --rm --name wget-runner-$num -v $PWD:/data docker-wget /bin/bash -c "wget '$@'"
+done
